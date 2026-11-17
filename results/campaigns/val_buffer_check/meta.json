@@ -1,0 +1,177 @@
+{
+  "campaign": "val_buffer_check",
+  "created": "2026-11-13T02:06:56",
+  "plan_name": "baseline:1.0,baseline:2.0",
+  "reps": 1,
+  "seed": 6048,
+  "duration_s": 45,
+  "warmup_s": 10,
+  "protocol": "all",
+  "page_params": "",
+  "conditions": [
+    [
+      "baseline",
+      1.0
+    ],
+    [
+      "baseline",
+      2.0
+    ]
+  ],
+  "plan": [
+    {
+      "run_id": "r01_baseline_b1.0",
+      "rep": 1,
+      "profile": "baseline",
+      "buffer": 1.0,
+      "order_index": 0,
+      "campaign": "val_buffer_check"
+    },
+    {
+      "run_id": "r01_baseline_b2.0",
+      "rep": 1,
+      "profile": "baseline",
+      "buffer": 2.0,
+      "order_index": 1,
+      "campaign": "val_buffer_check"
+    }
+  ],
+  "profiles": {
+    "baseline": {
+      "description": "No emulated impairment (physical path only)",
+      "rate_kbps": null,
+      "delay_ms": 0,
+      "jitter_ms": 0,
+      "loss_pct": 0.0
+    },
+    "bw_5m": {
+      "description": "5.0 Mbps, +20 ms RTT, 0% loss (reference link)",
+      "rate_kbps": 5000,
+      "delay_ms": 20,
+      "jitter_ms": 2,
+      "loss_pct": 0.0
+    },
+    "bw_3m": {
+      "description": "3.0 Mbps, +20 ms RTT, 0% loss (~1.6x stream bitrate)",
+      "rate_kbps": 3000,
+      "delay_ms": 20,
+      "jitter_ms": 2,
+      "loss_pct": 0.0
+    },
+    "bw_2.2m": {
+      "description": "2.2 Mbps, +20 ms RTT, 0% loss (~1.15x stream bitrate, tight)",
+      "rate_kbps": 2200,
+      "delay_ms": 20,
+      "jitter_ms": 2,
+      "loss_pct": 0.0
+    },
+    "bw_1.6m": {
+      "description": "1.6 Mbps, +20 ms RTT, 0% loss (below stream bitrate, overload)",
+      "rate_kbps": 1600,
+      "delay_ms": 20,
+      "jitter_ms": 2,
+      "loss_pct": 0.0
+    },
+    "rtt_80ms": {
+      "description": "5.0 Mbps, +80 ms RTT, 0% loss (cross-country)",
+      "rate_kbps": 5000,
+      "delay_ms": 80,
+      "jitter_ms": 2,
+      "loss_pct": 0.0
+    },
+    "rtt_160ms": {
+      "description": "5.0 Mbps, +160 ms RTT, 0% loss (intercontinental)",
+      "rate_kbps": 5000,
+      "delay_ms": 160,
+      "jitter_ms": 2,
+      "loss_pct": 0.0
+    },
+    "rtt_300ms": {
+      "description": "5.0 Mbps, +300 ms RTT, 0% loss (satellite-like)",
+      "rate_kbps": 5000,
+      "delay_ms": 300,
+      "jitter_ms": 2,
+      "loss_pct": 0.0
+    },
+    "loss_1pct": {
+      "description": "5.0 Mbps, +20 ms RTT, 1% random loss",
+      "rate_kbps": 5000,
+      "delay_ms": 20,
+      "jitter_ms": 2,
+      "loss_pct": 1.0
+    },
+    "loss_3pct": {
+      "description": "5.0 Mbps, +20 ms RTT, 3% random loss",
+      "rate_kbps": 5000,
+      "delay_ms": 20,
+      "jitter_ms": 2,
+      "loss_pct": 3.0
+    },
+    "loss_5pct": {
+      "description": "5.0 Mbps, +20 ms RTT, 5% random loss",
+      "rate_kbps": 5000,
+      "delay_ms": 20,
+      "jitter_ms": 2,
+      "loss_pct": 5.0
+    },
+    "cellular_4g": {
+      "description": "4G/LTE-like: 2.2 Mbps, +70 ms RTT, 25 ms jitter, 0.8% loss",
+      "rate_kbps": 2200,
+      "delay_ms": 70,
+      "jitter_ms": 25,
+      "loss_pct": 0.8
+    }
+  },
+  "topology": {
+    "server": {
+      "role": "media server + stream source + tc/netem",
+      "ip": "10.21.232.54",
+      "host": "vijay425",
+      "cpu": "Intel(R) Core(TM) i7-14700",
+      "kernel": "7.0.0-38-generic",
+      "srs_version": "5.0.225",
+      "containers": {
+        "streaming-srs": {
+          "running": true,
+          "image": "ossrs/srs:5",
+          "image_id": "sha256:b46279b1d3884d283ee3ccdff17596a92b410e9416524e23ce6f676c60df4931"
+        },
+        "streaming-llhls": {
+          "running": true,
+          "image": "bluenviron/mediamtx:1.21.3",
+          "image_id": "sha256:b0c14cc8ca728087348b41e2e58090af8003f8c6375b047e94547404b7a14061"
+        }
+      }
+    },
+    "client": {
+      "role": "viewer (headless Chromium) + campaign runner",
+      "host": "balaji_k",
+      "os": "Windows-10-10.0.26200-SP0",
+      "cpu": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+      "browser": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      "browser_version": "157.0.8103.51"
+    },
+    "stream": {
+      "video": "H.264 Baseline 1280x720@30, CBR 1800 kbps, GOP 15 (0.5 s), no B-frames",
+      "audio": "AAC-LC 96 kbps 44.1 kHz stereo",
+      "source": {
+        "active": true,
+        "clients": 1,
+        "video": {
+          "codec": "H264",
+          "profile": "Baseline",
+          "level": "3.1",
+          "width": 1280,
+          "height": 720
+        },
+        "audio": {
+          "codec": "AAC",
+          "sample_rate": 44100,
+          "channel": 2,
+          "profile": "LC"
+        },
+        "recv_kbps": 1454
+      }
+    }
+  }
+}

@@ -1,0 +1,1075 @@
+{
+  "campaign": "main_20261113",
+  "created": "2026-11-13T02:09:48",
+  "plan_name": "full",
+  "reps": 5,
+  "seed": 6048,
+  "duration_s": 45,
+  "warmup_s": 10,
+  "protocol": "all",
+  "page_params": "",
+  "conditions": [
+    [
+      "baseline",
+      0.2
+    ],
+    [
+      "baseline",
+      0.5
+    ],
+    [
+      "baseline",
+      1.0
+    ],
+    [
+      "baseline",
+      2.0
+    ],
+    [
+      "baseline",
+      3.5
+    ],
+    [
+      "cellular_4g",
+      0.2
+    ],
+    [
+      "cellular_4g",
+      0.5
+    ],
+    [
+      "cellular_4g",
+      1.0
+    ],
+    [
+      "cellular_4g",
+      2.0
+    ],
+    [
+      "cellular_4g",
+      3.5
+    ],
+    [
+      "bw_5m",
+      1.0
+    ],
+    [
+      "bw_3m",
+      1.0
+    ],
+    [
+      "bw_2.2m",
+      1.0
+    ],
+    [
+      "bw_1.6m",
+      1.0
+    ],
+    [
+      "rtt_80ms",
+      1.0
+    ],
+    [
+      "rtt_160ms",
+      1.0
+    ],
+    [
+      "rtt_300ms",
+      1.0
+    ],
+    [
+      "loss_1pct",
+      1.0
+    ],
+    [
+      "loss_3pct",
+      1.0
+    ],
+    [
+      "loss_5pct",
+      1.0
+    ]
+  ],
+  "plan": [
+    {
+      "run_id": "r01_cellular_4g_b0.5",
+      "rep": 1,
+      "profile": "cellular_4g",
+      "buffer": 0.5,
+      "order_index": 0,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_loss_3pct_b1.0",
+      "rep": 1,
+      "profile": "loss_3pct",
+      "buffer": 1.0,
+      "order_index": 1,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_cellular_4g_b1.0",
+      "rep": 1,
+      "profile": "cellular_4g",
+      "buffer": 1.0,
+      "order_index": 2,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_baseline_b0.5",
+      "rep": 1,
+      "profile": "baseline",
+      "buffer": 0.5,
+      "order_index": 3,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_bw_5m_b1.0",
+      "rep": 1,
+      "profile": "bw_5m",
+      "buffer": 1.0,
+      "order_index": 4,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_baseline_b3.5",
+      "rep": 1,
+      "profile": "baseline",
+      "buffer": 3.5,
+      "order_index": 5,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_baseline_b2.0",
+      "rep": 1,
+      "profile": "baseline",
+      "buffer": 2.0,
+      "order_index": 6,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_loss_5pct_b1.0",
+      "rep": 1,
+      "profile": "loss_5pct",
+      "buffer": 1.0,
+      "order_index": 7,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_bw_2.2m_b1.0",
+      "rep": 1,
+      "profile": "bw_2.2m",
+      "buffer": 1.0,
+      "order_index": 8,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_rtt_80ms_b1.0",
+      "rep": 1,
+      "profile": "rtt_80ms",
+      "buffer": 1.0,
+      "order_index": 9,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_cellular_4g_b3.5",
+      "rep": 1,
+      "profile": "cellular_4g",
+      "buffer": 3.5,
+      "order_index": 10,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_loss_1pct_b1.0",
+      "rep": 1,
+      "profile": "loss_1pct",
+      "buffer": 1.0,
+      "order_index": 11,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_cellular_4g_b2.0",
+      "rep": 1,
+      "profile": "cellular_4g",
+      "buffer": 2.0,
+      "order_index": 12,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_baseline_b1.0",
+      "rep": 1,
+      "profile": "baseline",
+      "buffer": 1.0,
+      "order_index": 13,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_bw_3m_b1.0",
+      "rep": 1,
+      "profile": "bw_3m",
+      "buffer": 1.0,
+      "order_index": 14,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_cellular_4g_b0.2",
+      "rep": 1,
+      "profile": "cellular_4g",
+      "buffer": 0.2,
+      "order_index": 15,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_baseline_b0.2",
+      "rep": 1,
+      "profile": "baseline",
+      "buffer": 0.2,
+      "order_index": 16,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_rtt_300ms_b1.0",
+      "rep": 1,
+      "profile": "rtt_300ms",
+      "buffer": 1.0,
+      "order_index": 17,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_bw_1.6m_b1.0",
+      "rep": 1,
+      "profile": "bw_1.6m",
+      "buffer": 1.0,
+      "order_index": 18,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r01_rtt_160ms_b1.0",
+      "rep": 1,
+      "profile": "rtt_160ms",
+      "buffer": 1.0,
+      "order_index": 19,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_cellular_4g_b2.0",
+      "rep": 2,
+      "profile": "cellular_4g",
+      "buffer": 2.0,
+      "order_index": 20,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_cellular_4g_b3.5",
+      "rep": 2,
+      "profile": "cellular_4g",
+      "buffer": 3.5,
+      "order_index": 21,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_bw_1.6m_b1.0",
+      "rep": 2,
+      "profile": "bw_1.6m",
+      "buffer": 1.0,
+      "order_index": 22,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_cellular_4g_b0.2",
+      "rep": 2,
+      "profile": "cellular_4g",
+      "buffer": 0.2,
+      "order_index": 23,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_baseline_b3.5",
+      "rep": 2,
+      "profile": "baseline",
+      "buffer": 3.5,
+      "order_index": 24,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_bw_5m_b1.0",
+      "rep": 2,
+      "profile": "bw_5m",
+      "buffer": 1.0,
+      "order_index": 25,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_bw_3m_b1.0",
+      "rep": 2,
+      "profile": "bw_3m",
+      "buffer": 1.0,
+      "order_index": 26,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_loss_3pct_b1.0",
+      "rep": 2,
+      "profile": "loss_3pct",
+      "buffer": 1.0,
+      "order_index": 27,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_loss_1pct_b1.0",
+      "rep": 2,
+      "profile": "loss_1pct",
+      "buffer": 1.0,
+      "order_index": 28,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_rtt_160ms_b1.0",
+      "rep": 2,
+      "profile": "rtt_160ms",
+      "buffer": 1.0,
+      "order_index": 29,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_cellular_4g_b0.5",
+      "rep": 2,
+      "profile": "cellular_4g",
+      "buffer": 0.5,
+      "order_index": 30,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_baseline_b1.0",
+      "rep": 2,
+      "profile": "baseline",
+      "buffer": 1.0,
+      "order_index": 31,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_loss_5pct_b1.0",
+      "rep": 2,
+      "profile": "loss_5pct",
+      "buffer": 1.0,
+      "order_index": 32,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_bw_2.2m_b1.0",
+      "rep": 2,
+      "profile": "bw_2.2m",
+      "buffer": 1.0,
+      "order_index": 33,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_baseline_b0.5",
+      "rep": 2,
+      "profile": "baseline",
+      "buffer": 0.5,
+      "order_index": 34,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_baseline_b2.0",
+      "rep": 2,
+      "profile": "baseline",
+      "buffer": 2.0,
+      "order_index": 35,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_baseline_b0.2",
+      "rep": 2,
+      "profile": "baseline",
+      "buffer": 0.2,
+      "order_index": 36,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_cellular_4g_b1.0",
+      "rep": 2,
+      "profile": "cellular_4g",
+      "buffer": 1.0,
+      "order_index": 37,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_rtt_300ms_b1.0",
+      "rep": 2,
+      "profile": "rtt_300ms",
+      "buffer": 1.0,
+      "order_index": 38,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r02_rtt_80ms_b1.0",
+      "rep": 2,
+      "profile": "rtt_80ms",
+      "buffer": 1.0,
+      "order_index": 39,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_bw_5m_b1.0",
+      "rep": 3,
+      "profile": "bw_5m",
+      "buffer": 1.0,
+      "order_index": 40,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_rtt_300ms_b1.0",
+      "rep": 3,
+      "profile": "rtt_300ms",
+      "buffer": 1.0,
+      "order_index": 41,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_rtt_160ms_b1.0",
+      "rep": 3,
+      "profile": "rtt_160ms",
+      "buffer": 1.0,
+      "order_index": 42,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_baseline_b1.0",
+      "rep": 3,
+      "profile": "baseline",
+      "buffer": 1.0,
+      "order_index": 43,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_bw_2.2m_b1.0",
+      "rep": 3,
+      "profile": "bw_2.2m",
+      "buffer": 1.0,
+      "order_index": 44,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_cellular_4g_b0.5",
+      "rep": 3,
+      "profile": "cellular_4g",
+      "buffer": 0.5,
+      "order_index": 45,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_loss_3pct_b1.0",
+      "rep": 3,
+      "profile": "loss_3pct",
+      "buffer": 1.0,
+      "order_index": 46,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_baseline_b3.5",
+      "rep": 3,
+      "profile": "baseline",
+      "buffer": 3.5,
+      "order_index": 47,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_baseline_b0.5",
+      "rep": 3,
+      "profile": "baseline",
+      "buffer": 0.5,
+      "order_index": 48,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_loss_5pct_b1.0",
+      "rep": 3,
+      "profile": "loss_5pct",
+      "buffer": 1.0,
+      "order_index": 49,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_cellular_4g_b2.0",
+      "rep": 3,
+      "profile": "cellular_4g",
+      "buffer": 2.0,
+      "order_index": 50,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_baseline_b0.2",
+      "rep": 3,
+      "profile": "baseline",
+      "buffer": 0.2,
+      "order_index": 51,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_bw_1.6m_b1.0",
+      "rep": 3,
+      "profile": "bw_1.6m",
+      "buffer": 1.0,
+      "order_index": 52,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_cellular_4g_b1.0",
+      "rep": 3,
+      "profile": "cellular_4g",
+      "buffer": 1.0,
+      "order_index": 53,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_rtt_80ms_b1.0",
+      "rep": 3,
+      "profile": "rtt_80ms",
+      "buffer": 1.0,
+      "order_index": 54,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_cellular_4g_b3.5",
+      "rep": 3,
+      "profile": "cellular_4g",
+      "buffer": 3.5,
+      "order_index": 55,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_baseline_b2.0",
+      "rep": 3,
+      "profile": "baseline",
+      "buffer": 2.0,
+      "order_index": 56,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_cellular_4g_b0.2",
+      "rep": 3,
+      "profile": "cellular_4g",
+      "buffer": 0.2,
+      "order_index": 57,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_bw_3m_b1.0",
+      "rep": 3,
+      "profile": "bw_3m",
+      "buffer": 1.0,
+      "order_index": 58,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r03_loss_1pct_b1.0",
+      "rep": 3,
+      "profile": "loss_1pct",
+      "buffer": 1.0,
+      "order_index": 59,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_cellular_4g_b2.0",
+      "rep": 4,
+      "profile": "cellular_4g",
+      "buffer": 2.0,
+      "order_index": 60,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_baseline_b1.0",
+      "rep": 4,
+      "profile": "baseline",
+      "buffer": 1.0,
+      "order_index": 61,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_cellular_4g_b0.2",
+      "rep": 4,
+      "profile": "cellular_4g",
+      "buffer": 0.2,
+      "order_index": 62,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_cellular_4g_b1.0",
+      "rep": 4,
+      "profile": "cellular_4g",
+      "buffer": 1.0,
+      "order_index": 63,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_baseline_b0.2",
+      "rep": 4,
+      "profile": "baseline",
+      "buffer": 0.2,
+      "order_index": 64,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_cellular_4g_b0.5",
+      "rep": 4,
+      "profile": "cellular_4g",
+      "buffer": 0.5,
+      "order_index": 65,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_loss_1pct_b1.0",
+      "rep": 4,
+      "profile": "loss_1pct",
+      "buffer": 1.0,
+      "order_index": 66,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_baseline_b0.5",
+      "rep": 4,
+      "profile": "baseline",
+      "buffer": 0.5,
+      "order_index": 67,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_rtt_300ms_b1.0",
+      "rep": 4,
+      "profile": "rtt_300ms",
+      "buffer": 1.0,
+      "order_index": 68,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_baseline_b2.0",
+      "rep": 4,
+      "profile": "baseline",
+      "buffer": 2.0,
+      "order_index": 69,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_rtt_160ms_b1.0",
+      "rep": 4,
+      "profile": "rtt_160ms",
+      "buffer": 1.0,
+      "order_index": 70,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_loss_3pct_b1.0",
+      "rep": 4,
+      "profile": "loss_3pct",
+      "buffer": 1.0,
+      "order_index": 71,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_bw_1.6m_b1.0",
+      "rep": 4,
+      "profile": "bw_1.6m",
+      "buffer": 1.0,
+      "order_index": 72,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_bw_3m_b1.0",
+      "rep": 4,
+      "profile": "bw_3m",
+      "buffer": 1.0,
+      "order_index": 73,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_cellular_4g_b3.5",
+      "rep": 4,
+      "profile": "cellular_4g",
+      "buffer": 3.5,
+      "order_index": 74,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_bw_5m_b1.0",
+      "rep": 4,
+      "profile": "bw_5m",
+      "buffer": 1.0,
+      "order_index": 75,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_loss_5pct_b1.0",
+      "rep": 4,
+      "profile": "loss_5pct",
+      "buffer": 1.0,
+      "order_index": 76,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_rtt_80ms_b1.0",
+      "rep": 4,
+      "profile": "rtt_80ms",
+      "buffer": 1.0,
+      "order_index": 77,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_baseline_b3.5",
+      "rep": 4,
+      "profile": "baseline",
+      "buffer": 3.5,
+      "order_index": 78,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r04_bw_2.2m_b1.0",
+      "rep": 4,
+      "profile": "bw_2.2m",
+      "buffer": 1.0,
+      "order_index": 79,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_baseline_b3.5",
+      "rep": 5,
+      "profile": "baseline",
+      "buffer": 3.5,
+      "order_index": 80,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_baseline_b0.5",
+      "rep": 5,
+      "profile": "baseline",
+      "buffer": 0.5,
+      "order_index": 81,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_baseline_b1.0",
+      "rep": 5,
+      "profile": "baseline",
+      "buffer": 1.0,
+      "order_index": 82,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_baseline_b2.0",
+      "rep": 5,
+      "profile": "baseline",
+      "buffer": 2.0,
+      "order_index": 83,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_rtt_300ms_b1.0",
+      "rep": 5,
+      "profile": "rtt_300ms",
+      "buffer": 1.0,
+      "order_index": 84,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_cellular_4g_b3.5",
+      "rep": 5,
+      "profile": "cellular_4g",
+      "buffer": 3.5,
+      "order_index": 85,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_baseline_b0.2",
+      "rep": 5,
+      "profile": "baseline",
+      "buffer": 0.2,
+      "order_index": 86,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_loss_1pct_b1.0",
+      "rep": 5,
+      "profile": "loss_1pct",
+      "buffer": 1.0,
+      "order_index": 87,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_cellular_4g_b0.5",
+      "rep": 5,
+      "profile": "cellular_4g",
+      "buffer": 0.5,
+      "order_index": 88,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_cellular_4g_b1.0",
+      "rep": 5,
+      "profile": "cellular_4g",
+      "buffer": 1.0,
+      "order_index": 89,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_loss_3pct_b1.0",
+      "rep": 5,
+      "profile": "loss_3pct",
+      "buffer": 1.0,
+      "order_index": 90,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_cellular_4g_b2.0",
+      "rep": 5,
+      "profile": "cellular_4g",
+      "buffer": 2.0,
+      "order_index": 91,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_bw_3m_b1.0",
+      "rep": 5,
+      "profile": "bw_3m",
+      "buffer": 1.0,
+      "order_index": 92,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_rtt_160ms_b1.0",
+      "rep": 5,
+      "profile": "rtt_160ms",
+      "buffer": 1.0,
+      "order_index": 93,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_cellular_4g_b0.2",
+      "rep": 5,
+      "profile": "cellular_4g",
+      "buffer": 0.2,
+      "order_index": 94,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_bw_5m_b1.0",
+      "rep": 5,
+      "profile": "bw_5m",
+      "buffer": 1.0,
+      "order_index": 95,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_rtt_80ms_b1.0",
+      "rep": 5,
+      "profile": "rtt_80ms",
+      "buffer": 1.0,
+      "order_index": 96,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_loss_5pct_b1.0",
+      "rep": 5,
+      "profile": "loss_5pct",
+      "buffer": 1.0,
+      "order_index": 97,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_bw_2.2m_b1.0",
+      "rep": 5,
+      "profile": "bw_2.2m",
+      "buffer": 1.0,
+      "order_index": 98,
+      "campaign": "main_20261113"
+    },
+    {
+      "run_id": "r05_bw_1.6m_b1.0",
+      "rep": 5,
+      "profile": "bw_1.6m",
+      "buffer": 1.0,
+      "order_index": 99,
+      "campaign": "main_20261113"
+    }
+  ],
+  "profiles": {
+    "baseline": {
+      "description": "No emulated impairment (physical path only)",
+      "rate_kbps": null,
+      "delay_ms": 0,
+      "jitter_ms": 0,
+      "loss_pct": 0.0
+    },
+    "bw_5m": {
+      "description": "5.0 Mbps, +20 ms RTT, 0% loss (reference link)",
+      "rate_kbps": 5000,
+      "delay_ms": 20,
+      "jitter_ms": 2,
+      "loss_pct": 0.0
+    },
+    "bw_3m": {
+      "description": "3.0 Mbps, +20 ms RTT, 0% loss (~1.6x stream bitrate)",
+      "rate_kbps": 3000,
+      "delay_ms": 20,
+      "jitter_ms": 2,
+      "loss_pct": 0.0
+    },
+    "bw_2.2m": {
+      "description": "2.2 Mbps, +20 ms RTT, 0% loss (~1.15x stream bitrate, tight)",
+      "rate_kbps": 2200,
+      "delay_ms": 20,
+      "jitter_ms": 2,
+      "loss_pct": 0.0
+    },
+    "bw_1.6m": {
+      "description": "1.6 Mbps, +20 ms RTT, 0% loss (below stream bitrate, overload)",
+      "rate_kbps": 1600,
+      "delay_ms": 20,
+      "jitter_ms": 2,
+      "loss_pct": 0.0
+    },
+    "rtt_80ms": {
+      "description": "5.0 Mbps, +80 ms RTT, 0% loss (cross-country)",
+      "rate_kbps": 5000,
+      "delay_ms": 80,
+      "jitter_ms": 2,
+      "loss_pct": 0.0
+    },
+    "rtt_160ms": {
+      "description": "5.0 Mbps, +160 ms RTT, 0% loss (intercontinental)",
+      "rate_kbps": 5000,
+      "delay_ms": 160,
+      "jitter_ms": 2,
+      "loss_pct": 0.0
+    },
+    "rtt_300ms": {
+      "description": "5.0 Mbps, +300 ms RTT, 0% loss (satellite-like)",
+      "rate_kbps": 5000,
+      "delay_ms": 300,
+      "jitter_ms": 2,
+      "loss_pct": 0.0
+    },
+    "loss_1pct": {
+      "description": "5.0 Mbps, +20 ms RTT, 1% random loss",
+      "rate_kbps": 5000,
+      "delay_ms": 20,
+      "jitter_ms": 2,
+      "loss_pct": 1.0
+    },
+    "loss_3pct": {
+      "description": "5.0 Mbps, +20 ms RTT, 3% random loss",
+      "rate_kbps": 5000,
+      "delay_ms": 20,
+      "jitter_ms": 2,
+      "loss_pct": 3.0
+    },
+    "loss_5pct": {
+      "description": "5.0 Mbps, +20 ms RTT, 5% random loss",
+      "rate_kbps": 5000,
+      "delay_ms": 20,
+      "jitter_ms": 2,
+      "loss_pct": 5.0
+    },
+    "cellular_4g": {
+      "description": "4G/LTE-like: 2.2 Mbps, +70 ms RTT, 25 ms jitter, 0.8% loss",
+      "rate_kbps": 2200,
+      "delay_ms": 70,
+      "jitter_ms": 25,
+      "loss_pct": 0.8
+    }
+  },
+  "topology": {
+    "server": {
+      "role": "media server + stream source + tc/netem",
+      "ip": "10.21.232.54",
+      "host": "vijay425",
+      "cpu": "Intel(R) Core(TM) i7-14700",
+      "kernel": "7.0.0-38-generic",
+      "srs_version": "5.0.225",
+      "containers": {
+        "streaming-srs": {
+          "running": true,
+          "image": "ossrs/srs:5",
+          "image_id": "sha256:b46279b1d3884d283ee3ccdff17596a92b410e9416524e23ce6f676c60df4931"
+        },
+        "streaming-llhls": {
+          "running": true,
+          "image": "bluenviron/mediamtx:1.21.3",
+          "image_id": "sha256:b0c14cc8ca728087348b41e2e58090af8003f8c6375b047e94547404b7a14061"
+        }
+      }
+    },
+    "client": {
+      "role": "viewer (headless Chromium) + campaign runner",
+      "host": "balaji_k",
+      "os": "Windows-10-10.0.26200-SP0",
+      "cpu": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+      "browser": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      "browser_version": "157.0.8103.51"
+    },
+    "stream": {
+      "video": "H.264 Baseline 1280x720@30, CBR 1800 kbps, GOP 15 (0.5 s), no B-frames",
+      "audio": "AAC-LC 96 kbps 44.1 kHz stereo",
+      "source": {
+        "active": true,
+        "clients": 1,
+        "video": {
+          "codec": "H264",
+          "profile": "Baseline",
+          "level": "3.1",
+          "width": 1280,
+          "height": 720
+        },
+        "audio": {
+          "codec": "AAC",
+          "sample_rate": 44100,
+          "channel": 2,
+          "profile": "LC"
+        },
+        "recv_kbps": 1455
+      }
+    }
+  },
+  "physical_link": {
+    "ping": {
+      "sent": 30,
+      "received": 30,
+      "loss_pct": 0.0,
+      "min_ms": 2.0,
+      "median_ms": 16.5,
+      "mean_ms": 30.5,
+      "p95_ms": 132.0,
+      "max_ms": 159.0,
+      "jitter_ms": 39.69,
+      "note": "Windows ping reports whole milliseconds"
+    },
+    "http_clock_probe": {
+      "offset_ms": 71376.82,
+      "unc_ms": 1.14,
+      "rtt_min_ms": 2.28,
+      "rtt_median_ms": 3.28,
+      "n": 40,
+      "at": 1794516018.6620793
+    },
+    "downlink_tcp": {
+      "bytes": 30000000,
+      "mbps_runs": [
+        39.1,
+        31.1,
+        15.5
+      ],
+      "mbps_median": 31.1
+    },
+    "wifi": {
+      "Description": "Realtek RTL8852BE WiFi 6 802.11ax PCIe Adapter",
+      "State": "connected",
+      "Band": "2.4 GHz",
+      "Channel": "5",
+      "Radio type": "802.11n",
+      "Authentication": "WPA2-Personal",
+      "Receive rate (Mbps)": "300",
+      "Transmit rate (Mbps)": "300",
+      "Signal": "91%"
+    }
+  }
+}

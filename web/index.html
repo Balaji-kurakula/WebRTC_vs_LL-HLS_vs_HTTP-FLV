@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CS6048 Testbed: WebRTC vs LL-HLS vs HTTP-FLV</title>
+  <!-- Player libraries are vendored so the demo works without Internet access -->
+  <script src="vendor/hls.min.js"></script>
+  <script src="vendor/mpegts.js"></script>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --good: #4ade80;
+      --warn: #facc15;
+      --bad: #f87171;
+      --webrtc: #38bdf8;
+      --llhls: #fb923c;
+      --httpflv: #4ade80;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 14px 20px 24px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 { font-size: 1.15rem; font-weight: 700; }
+    .subtitle { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+    .pills { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pill {
+      font-size: 0.74rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #1e293b;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+    .pill b { color: var(--text); font-weight: 600; }
+    .pill.warn { border-color: var(--warn); color: var(--warn); }
+    .controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 12px 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .controls .sep { width: 1px; height: 22px; background: var(--border); margin: 0 4px; }
+    select, button {
+      background: #1e293b;
+      color: white;
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+    button { background: #0284c7; border-color: #0284c7; cursor: pointer; }
+    button.secondary { background: #334155; border-color: #475569; }
+    button:disabled { opacity: 0.5; cursor: default; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .grid.single-mode { grid-template-columns: minmax(0, 880px); justify-content: center; }
+    @media (max-width: 1100px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+    .card-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .proto-title { font-size: 0.98rem; font-weight: 700; }
+    #card-webrtc .proto-title { color: var(--webrtc); }
+    #card-llhls .proto-title { color: var(--llhls); }
+    #card-httpflv .proto-title { color: var(--httpflv); }
+    .badge {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #334155;
+      color: var(--muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge.live { background: rgba(74, 222, 128, 0.15); color: var(--good); }
+    .badge.stalled { background: rgba(248, 113, 113, 0.2); color: var(--bad); }
+    video {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border-radius: 6px;
+      border: 1px solid #000;
+    }
+    .metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; font-size: 0.78rem; }
+    .metric-box {
+      background: rgba(15, 23, 42, 0.65);
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(51, 65, 85, 0.6);
+      min-width: 0;
+    }
+    .metric-label { color: var(--muted); font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.02em; }
+    .metric-val { font-size: 0.92rem; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .chart-card { margin-top: 12px; }
+    .legend { display: flex; gap: 14px; font-size: 0.76rem; color: var(--muted); }
+    .legend i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }
+    canvas#latChart { width: 100%; height: 230px; display: block; }
+    .note { font-size: 0.72rem; color: var(--muted); margin-top: 6px; line-height: 1.45; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>WebRTC vs LL-HLS vs HTTP-FLV &mdash; Two-Machine Live-Streaming Testbed</h1>
+      <div class="subtitle" id="runBanner">Viewer (this browser) &larr; network &larr; media server (SRS + MediaMTX) &larr; timestamped 720p30 source</div>
+    </div>
+    <div class="pills">
+      <span class="pill" id="pill-server">server <b>--</b></span>
+      <span class="pill" id="pill-clock">clock offset <b>--</b></span>
+      <span class="pill" id="pill-net">network <b>--</b></span>
+    </div>
+  </header>
+
+  <div class="controls" id="controls">
+    <span>Network profile</span>
+    <select id="profileSelect"><option value="">(agent offline)</option></select>
+    <button id="applyProfileBtn">Apply</button>
+    <span class="sep"></span>
+    <span>Client buffer target</span>
+    <select id="bufferSelect">
+      <option value="0">Player default</option>
+      <option value="0.2">0.2 s</option>
+      <option value="0.5">0.5 s</option>
+      <option value="1">1.0 s</option>
+      <option value="2">2.0 s</option>
+      <option value="3.5">3.5 s</option>
+    </select>
+    <button id="startBtn">Start / restart players</button>
+    <button class="secondary" id="resetBtn">Reset metrics</button>
+    <button class="secondary" id="calBtn">Re-sync clock</button>
+    <button class="secondary" id="exportBtn">Export JSON</button>
+  </div>
+
+  <div class="grid" id="playerGrid"></div>
+
+  <section class="card chart-card">
+    <div class="card-header">
+      <div class="proto-title" style="color:var(--text)">Live end-to-end latency (last 60 s)</div>
+      <div class="legend">
+        <span><i style="background:var(--webrtc)"></i>WebRTC</span>
+        <span><i style="background:var(--llhls)"></i>LL-HLS</span>
+        <span><i style="background:var(--httpflv)"></i>HTTP-FLV</span>
+        <span><i style="background:var(--bad)"></i>stall</span>
+      </div>
+    </div>
+    <canvas id="latChart"></canvas>
+    <div class="note">
+      Latency = (frame display time, converted to the server clock) &minus; (capture time encoded in the frame's 32-bit barcode).
+      Clock offset between this machine and the server is measured over the unshaped control channel (min-RTT probe; &plusmn; = RTT/2).
+      A stall is any gap &gt; 200 ms between consecutively presented frames (same definition for all three players).
+      Live-card statistics use the last 30 s; stall counts are since the last reset. Wire rate = bytes leaving the server's per-protocol tc queue.
+    </div>
+  </section>
+
+  <script>
+    // ------------------------------------------------------------------ configuration
+    const params = new URLSearchParams(window.location.search);
+    const SERVER = params.get('server') || window.location.hostname || 'localhost';
+    const AGENT = `http://${SERVER}:${params.get('agentPort') || '9000'}`;
+    const singleProto = params.get('protocol');           // 'webrtc' | 'llhls' | 'httpflv' | null
+    let bufferTarget = parseFloat(params.get('buffer') || '0');
+    const runDurationSec = parseFloat(params.get('duration') || '0');
+    const warmupSec = parseFloat(params.get('warmup') || '0');
+    const profileLabel = params.get('profile');
+    const runId = params.get('run');
+    const autoRun = params.get('autorun') === '1';
+    const REPORT_URL = params.get('report') || '/api/report';
+    const HLS_MAX_LAT = parseFloat(params.get('hlsMaxLat') || '0');   // 0 = hls.js default (no forced seek)
+
+    const ALL = ['webrtc', 'llhls', 'httpflv'];
+    const PROTOS = singleProto ? [singleProto] : ALL;
+    const LABEL = { webrtc: 'WebRTC (WHEP-style / UDP)', llhls: 'Apple LL-HLS (hls.js)', httpflv: 'HTTP-FLV (mpegts.js)' };
+    const SUB = {
+      webrtc: 'SRS RTC, SRTP over UDP :8000',
+      llhls: 'MediaMTX, 1 s segments / 200 ms parts, :8888',
+      httpflv: 'SRS chunked HTTP over TCP, :18080',
+    };
+    const COLOR = { webrtc: '#38bdf8', llhls: '#fb923c', httpflv: '#4ade80' };
+    const STALL_GAP_MS = 200;          // inter-frame presentation gap that counts as a stall
+    const DECODE_EVERY_MS = 95;        // barcode/latency sampling period per player (~10 Hz)
+    const LIVE_WINDOW_MS = 30000;      // rolling window for the live cards
+    const $ = (id) => document.getElementById(id);
+
+    // ------------------------------------------------------------------ UI scaffolding
+    function buildCards() {
+      const grid = $('playerGrid');
+      if (singleProto) grid.classList.add('single-mode');
+      grid.innerHTML = PROTOS.map((p) => `
+        <div class="card" id="card-${p}">
+          <div class="card-header">
+            <div><div class="proto-title">${LABEL[p]}</div><div class="subtitle">${SUB[p]}</div></div>
+            <span class="badge" id="status-${p}">IDLE</span>
+          </div>
+          <video id="video-${p}" autoplay muted playsinline></video>
+          <div class="metrics">
+            <div class="metric-box"><div class="metric-label">Latency now / mean</div><div class="metric-val" id="lat-${p}">--</div></div>
+            <div class="metric-box"><div class="metric-label">p95 latency / startup</div><div class="metric-val" id="p95-${p}">--</div></div>
+            <div class="metric-box"><div class="metric-label">Stalls (count / time)</div><div class="metric-val" id="stall-${p}">--</div></div>
+            <div class="metric-box"><div class="metric-label">Stall ratio / FPS</div><div class="metric-val" id="ratio-${p}">--</div></div>
+            <div class="metric-box"><div class="metric-label">Buffer level</div><div class="metric-val" id="buf-${p}">--</div></div>
+            <div class="metric-box"><div class="metric-label">Wire rate / drops</div><div class="metric-val" id="wire-${p}">--</div></div>
+          </div>
+        </div>`).join('');
+    }
+
+    function setBadge(p, text, cls) {
+      const b = $(`status-${p}`);
+      if (b && b.textContent !== text) { b.textContent = text; b.className = `badge ${cls || ''}`; }
+    }
+
+    // ------------------------------------------------------------------ clock-offset calibration
+    // offset = (this machine's clock) - (server clock), estimated from the probe with the smallest RTT.
+    const clock = { offsetMs: null, uncMs: null, rttMinMs: null, history: [] };
+
+    async function calibrateClock(n) {
+      const samples = [];
+      for (let i = 0; i < n; i++) {
+        try {
+          const w0 = Date.now();
+          const p0 = performance.now();
+          const r = await fetch(`${AGENT}/api/time`, { cache: 'no-store' });
+          const j = await r.json();
+          const rtt = performance.now() - p0;
+          samples.push({ rtt, off: (w0 + rtt / 2) - j.t });
+        } catch (e) { /* agent unreachable */ }
+      }
+      if (!samples.length) { updateClockPill(); return null; }
+      samples.sort((a, b) => a.rtt - b.rtt);
+      const best = samples[0];
+      const res = {
+        offsetMs: +best.off.toFixed(2),
+        uncMs: +(best.rtt / 2).toFixed(2),
+        rttMinMs: +best.rtt.toFixed(2),
+        rttMedianMs: +samples[Math.floor(samples.length / 2)].rtt.toFixed(2),
+        n: samples.length,
+        atWallMs: Date.now(),
+      };
+      clock.offsetMs = res.offsetMs; clock.uncMs = res.uncMs; clock.rttMinMs = res.rttMinMs;
+      clock.history.push(res);
+      updateClockPill();
+      return res;
+    }
+
+    function updateClockPill() {
+      const pill = $('pill-clock');
+      if (clock.offsetMs === null) {
+        pill.innerHTML = 'clock offset <b>unknown (assuming 0)</b>';
+        pill.classList.add('warn');
+        return;
+      }
+      pill.classList.remove('warn');
+      pill.innerHTML = `clock offset <b>${clock.offsetMs >= 0 ? '+' : ''}${clock.offsetMs.toFixed(1)} ms</b> &plusmn;${clock.uncMs.toFixed(1)} &middot; RTT ${clock.rttMinMs.toFixed(1)} ms`;
+    }
+
+    // ------------------------------------------------------------------ measurement state
+    const session = { t0: performance.now(), startedWall: null };
+
+    function freshState() {
+      return {
+        startPerf: null, firstFramePerf: null, ttffMs: null, lastFramePerf: null,
+        frames: [],      // [tRelMs, latencyMs | null, presentedFrames]  one entry per frame callback
+        lastDecodePerf: -1e9,
+        stalls: [],      // [startRelMs, durationMs]
+        buffer: [],      // [tRelMs, seconds]
+        waitingEvents: 0, decodeFail: 0, invalidLat: 0,
+        events: [],      // [tRelMs, type, details] player error / warning events (diagnostics)
+        maxRanges: 0,    // most disjoint buffered ranges seen (gaps in the MSE buffer)
+        lastLatency: null, curBufferSec: null, clientKbps: null,
+        activeLoop: 0, pc: null, hls: null, flv: null, flvBufferInit: false,
+        rtc: { prevJbDelay: 0, prevJbCount: 0, prevBytes: 0, prevT: 0, last: null },
+        hlsBytes: 0, hlsPrevT: 0,
+      };
+    }
+    const state = {};
+    ALL.forEach((p) => { state[p] = freshState(); });
+
+    // ------------------------------------------------------------------ barcode decoding
+    // One row (y = 40 of 720) through the 36-cell barcode: [1,0] sync, 32-bit ms timestamp, [1] end, parity.
+    const rowCanvas = document.createElement('canvas');
+    rowCanvas.width = 1280; rowCanvas.height = 1;
+    const rowCtx = rowCanvas.getContext('2d', { willReadFrequently: true });
+
+    function decodeFrameTimestamp(video) {
+      const vw = video.videoWidth, vh = video.videoHeight;
+      if (!vw || !vh) return null;
+      try {
+        rowCtx.drawImage(video, 0, Math.round(40 * vh / 720), vw, 1, 0, 0, 1280, 1);
+        const img = rowCtx.getImageData(0, 0, 1280, 1).data;
+        const bits = new Array(36);
+        for (let i = 0; i < 36; i++) {
+          const o = (64 + i * 32 + 15) * 4;
+          bits[i] = (img[o] + img[o + 1] + img[o + 2]) / 3 > 128 ? 1 : 0;
+        }
+        if (bits[0] !== 1 || bits[1] !== 0 || bits[34] !== 1) return null;
+        let val = 0, parity = 0;
+        for (let i = 0; i < 32; i++) { val = val * 2 + bits[2 + i]; parity ^= bits[2 + i]; }
+        return parity === bits[35] ? val : null;
+      } catch (e) { return null; }
+    }
+
+    // ------------------------------------------------------------------ per-frame sampling (requestVideoFrameCallback)
+    // Only the most recently armed loop records frames, so re-arming (e.g. after a source change) is safe.
+    let loopSeq = 0;
+    function armFrameLoop(p) {
+      const video = $(`video-${p}`);
+      const st = state[p];
+      if (!video || !('requestVideoFrameCallback' in HTMLVideoElement.prototype)) return;
+      const loopId = ++loopSeq;
+      st.activeLoop = loopId;
+      const onFrame = (now, md) => {
+        if (state[p] !== st || st.activeLoop !== loopId) return;   // superseded loop or restarted player
+        const disp = md.expectedDisplayTime || now;
+        if (st.firstFramePerf === null) {
+          st.firstFramePerf = disp;
+          st.ttffMs = Math.round(disp - st.startPerf);
+        } else {
+          const gap = disp - st.lastFramePerf;
+          if (gap > STALL_GAP_MS) st.stalls.push([Math.round(st.lastFramePerf - session.t0), Math.round(gap)]);
+        }
+        st.lastFramePerf = disp;
+
+        // Barcode read-back is the expensive part, so latency is sampled at most every DECODE_EVERY_MS;
+        // frame timing (stalls, presented-frame count) is still recorded on every callback.
+        // lat: number = measured latency, null = not sampled on this frame, -1 = sampled but unreadable.
+        let lat = null;
+        if (disp - st.lastDecodePerf >= DECODE_EVERY_MS) {
+          st.lastDecodePerf = disp;
+          lat = -1;
+          const ts = decodeFrameTimestamp(video);
+          if (ts === null) {
+            st.decodeFail++;
+          } else {
+            const wallAtDisplay = Date.now() + (disp - performance.now());     // this machine's clock
+            const serverAtDisplay = wallAtDisplay - (clock.offsetMs || 0);      // -> server clock
+            let d = (Math.round(serverAtDisplay) % 4294967296) - ts;
+            if (d < -2147483648) d += 4294967296;
+            if (d >= 0 && d < 60000) lat = d; else st.invalidLat++;
+          }
+        }
+        st.frames.push([Math.round(disp - session.t0), lat, md.presentedFrames]);
+        if (lat !== null && lat >= 0) st.lastLatency = lat;
+        video.requestVideoFrameCallback(onFrame);
+      };
+      video.requestVideoFrameCallback(onFrame);
+    }
+
+    // ------------------------------------------------------------------ players
+    async function startWebRTC() {
+      const st = state.webrtc;
+      const video = $('video-webrtc');
+      const pc = new RTCPeerConnection();
+      st.pc = pc;
+      pc.addTransceiver('audio', { direction: 'recvonly' });
+      pc.addTransceiver('video', { direction: 'recvonly' });
+      pc.ontrack = (event) => {
+        if (video.srcObject !== event.streams[0]) video.srcObject = event.streams[0];
+        // Native jitter-buffer target (W3C RTCRtpReceiver.jitterBufferTarget, ms, Chrome caps at 4000 ms)
+        if (bufferTarget > 0 && event.receiver && 'jitterBufferTarget' in event.receiver) {
+          try { event.receiver.jitterBufferTarget = bufferTarget * 1000; } catch (e) { console.warn(e); }
+        }
+      };
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      const resp = await fetch(`http://${SERVER}:1985/rtc/v1/play/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ api: `http://${SERVER}:1985/rtc/v1/play/`, streamurl: `webrtc://${SERVER}/live/stream`, sdp: offer.sdp }),
+      });
+      const data = await resp.json();
+      if (!data.sdp) throw new Error(`SRS play failed: ${JSON.stringify(data)}`);
+      await pc.setRemoteDescription({ type: 'answer', sdp: data.sdp });
+    }
+
+    function startLLHLS() {
+      const st = state.llhls;
+      const video = $('video-llhls');
+      const syncDur = bufferTarget > 0 ? bufferTarget : null;
+      // Low-latency mode with playback-rate catch-up (up to 1.25x) toward the buffer target.
+      // No forced seek-to-live by default (hls.js default): a hard liveMaxLatencyDuration makes hls.js jump
+      // into unbuffered data and stall, which neither of the other players does. ?hlsMaxLat=<s> re-enables it.
+      const cfg = { lowLatencyMode: true, backBufferLength: 2, maxLiveSyncPlaybackRate: 1.25 };
+      if (syncDur !== null) {
+        cfg.liveSyncDuration = syncDur;
+        cfg.maxBufferLength = Math.max(syncDur * 2.0, 1.5);
+        if (HLS_MAX_LAT > 0) cfg.liveMaxLatencyDuration = syncDur + HLS_MAX_LAT;
+      }
+      const hls = new Hls(cfg);
+      st.hls = hls;
+      hls.on(Hls.Events.FRAG_LOADED, (evt, data) => {
+        const stats = (data.part && data.part.stats) || (data.frag && data.frag.stats);
+        if (stats) st.hlsBytes += stats.total || stats.loaded || 0;
+      });
+      hls.loadSource(`http://${SERVER}:8888/live/stream/index.m3u8`);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
+      hls.on(Hls.Events.ERROR, (evt, data) => logEvent(st, data.type, `${data.details}${data.fatal ? ' (fatal)' : ''}`));
+    }
+
+    function startHTTPFLV() {
+      const st = state.httpflv;
+      const video = $('video-httpflv');
+      const targetSec = bufferTarget > 0 ? bufferTarget : 0.5;
+      const player = mpegts.createPlayer(
+        { type: 'flv', isLive: true, url: `http://${SERVER}:18080/live/stream.flv` },
+        {
+          enableWorker: true,
+          enableStashBuffer: targetSec >= 0.2,
+          stashInitialSize: Math.max(16, Math.round(targetSec * 220)) * 1024,
+          liveBufferLatencyChasing: true,
+          liveBufferLatencyMaxLatency: targetSec + 0.45,
+          liveBufferLatencyMinRemain: Math.max(0.12, targetSec * 0.9),
+          autoCleanupSourceBuffer: true,
+        },
+      );
+      st.flv = player;
+      player.on(mpegts.Events.ERROR, (type, details) => logEvent(st, type, details));
+      player.on(mpegts.Events.STATISTICS_INFO, (info) => {
+        if (info && typeof info.speed === 'number') st.clientKbps = Math.round(info.speed * 8);
+      });
+      player.attachMediaElement(video);
+      player.load();
+      player.play().catch(() => {});
+    }
+
+    function logEvent(st, type, details) {
+      if (st.events.length < 300) st.events.push([Math.round(performance.now() - session.t0), String(type), String(details)]);
+    }
+
+    function stopPlayer(p) {
+      const st = state[p];
+      const video = $(`video-${p}`);
+      try { if (st.pc) st.pc.close(); } catch (e) {}
+      try { if (st.hls) st.hls.destroy(); } catch (e) {}
+      try { if (st.flv) { st.flv.pause(); st.flv.unload(); st.flv.detachMediaElement(); st.flv.destroy(); } } catch (e) {}
+      if (video) { video.srcObject = null; video.removeAttribute('src'); video.load(); }
+    }
+
+    function startAll() {
+      session.t0 = performance.now();
+      session.startedWall = Date.now();
+      for (const p of PROTOS) {
+        stopPlayer(p);
+        state[p] = freshState();
+        state[p].startPerf = performance.now();
+        setBadge(p, 'CONNECTING', '');
+        armFrameLoop(p);
+        const starter = { webrtc: startWebRTC, llhls: startLLHLS, httpflv: startHTTPFLV }[p];
+        Promise.resolve().then(starter).catch((e) => { console.error(p, e); setBadge(p, 'ERROR', 'stalled'); });
+      }
+      clearChartCache();
+    }
+
+    function resetMetrics() {
+      const now = performance.now();
+      for (const p of PROTOS) {
+        const st = state[p];
+        st.frames = []; st.stalls = []; st.buffer = [];
+        st.waitingEvents = 0; st.decodeFail = 0; st.invalidLat = 0;
+        if (st.lastFramePerf !== null) st.lastFramePerf = now;  // don't count the reset instant as a stall
+      }
+    }
+
+    // ------------------------------------------------------------------ buffer level / client-side stats (every 250 ms)
+    let polling = false;
+    async function pollPlayers() {
+      if (polling) return;
+      polling = true;
+      try { await pollPlayersOnce(); } finally { polling = false; }
+    }
+
+    async function pollPlayersOnce() {
+      const nowPerf = performance.now();
+      for (const p of PROTOS) {
+        const st = state[p];
+        const video = $(`video-${p}`);
+        if (st.startPerf === null || !video) continue;
+        let buf = null;
+        if (p === 'webrtc') {
+          if (!st.pc) continue;
+          let stats;
+          try { stats = await st.pc.getStats(); } catch (e) { continue; }
+          let bytes = 0, vid = null;
+          stats.forEach((r) => {
+            if (r.type === 'inbound-rtp') {
+              bytes += r.bytesReceived || 0;
+              if (r.kind === 'video') vid = r;
+            }
+          });
+          if (vid && vid.jitterBufferEmittedCount > st.rtc.prevJbCount) {
+            // jitter-buffer delay of the frames emitted since the last poll (not the lifetime average)
+            buf = (vid.jitterBufferDelay - st.rtc.prevJbDelay) / (vid.jitterBufferEmittedCount - st.rtc.prevJbCount);
+            st.rtc.prevJbDelay = vid.jitterBufferDelay;
+            st.rtc.prevJbCount = vid.jitterBufferEmittedCount;
+          }
+          if (!st.rtc.prevT) { st.rtc.prevT = nowPerf; st.rtc.prevBytes = bytes; }
+          else if (nowPerf - st.rtc.prevT >= 1000) {
+            st.clientKbps = Math.round(((bytes - st.rtc.prevBytes) * 8) / (nowPerf - st.rtc.prevT));
+            st.rtc.prevT = nowPerf; st.rtc.prevBytes = bytes;
+          }
+          if (vid) {
+            st.rtc.last = {
+              packetsReceived: vid.packetsReceived, packetsLost: vid.packetsLost, nackCount: vid.nackCount,
+              pliCount: vid.pliCount, firCount: vid.firCount, framesDecoded: vid.framesDecoded,
+              framesDropped: vid.framesDropped, freezeCount: vid.freezeCount,
+              totalFreezesDuration: vid.totalFreezesDuration, jitter: vid.jitter,
+              jitterBufferTargetDelay: vid.jitterBufferTargetDelay, jitterBufferDelay: vid.jitterBufferDelay,
+              jitterBufferEmittedCount: vid.jitterBufferEmittedCount, bytesReceived: bytes,
+            };
+          }
+        } else {
+          if (video.buffered && video.buffered.length) {
+            const end = video.buffered.end(video.buffered.length - 1);
+            // HTTP-FLV: mpegts.js has no "target latency" knob, so for targets above 0.6 s we establish the
+            // buffer once by seeking back from the live edge; latency chasing then holds it.
+            if (p === 'httpflv' && bufferTarget > 0.6 && !st.flvBufferInit) {
+              const start = video.buffered.start(0);
+              if (end - start >= bufferTarget) { video.currentTime = Math.max(start, end - bufferTarget); st.flvBufferInit = true; }
+            }
+            buf = Math.max(0, end - video.currentTime);
+            if (video.buffered.length > st.maxRanges) {
+              st.maxRanges = video.buffered.length;
+              logEvent(st, 'buffer', `${video.buffered.length} disjoint buffered ranges`);
+            }
+          }
+          if (p === 'llhls') {
+            if (!st.hlsPrevT) st.hlsPrevT = nowPerf;
+            else if (nowPerf - st.hlsPrevT >= 1000) {
+              st.clientKbps = Math.round((st.hlsBytes * 8) / (nowPerf - st.hlsPrevT));
+              st.hlsBytes = 0; st.hlsPrevT = nowPerf;
+            }
+          }
+        }
+        if (buf !== null && isFinite(buf)) {
+          st.curBufferSec = +buf.toFixed(3);
+          st.buffer.push([Math.round(nowPerf - session.t0), st.curBufferSec]);
+        }
+      }
+    }
+
+    // ------------------------------------------------------------------ statistics (same definitions as scripts/metrics.py)
+    function quantile(sorted, q) {
+      if (!sorted.length) return null;
+      const pos = (sorted.length - 1) * q, lo = Math.floor(pos), hi = Math.ceil(pos);
+      return sorted[lo] + (sorted[hi] - sorted[lo]) * (pos - lo);
+    }
+
+    function stallsUntil(p, endRel) {
+      const st = state[p];
+      const out = st.stalls.slice();
+      if (st.lastFramePerf !== null) {
+        const lastRel = st.lastFramePerf - session.t0;
+        if (endRel - lastRel > STALL_GAP_MS) out.push([Math.round(lastRel), Math.round(endRel - lastRel), 'ongoing']);
+      }
+      return out;
+    }
+
+    function summarize(p, fromRel, toRel) {
+      const st = state[p];
+      const firstRel = st.firstFramePerf === null ? null : st.firstFramePerf - session.t0;
+      const winStart = firstRel === null ? null : Math.max(fromRel, firstRel);
+      const res = { ttffMs: st.ttffMs, windowMs: 0, frames: 0, latN: 0 };
+      if (winStart === null || toRel <= winStart) return res;
+      const winMs = toRel - winStart;
+      const lats = [];
+      let frames = 0, sampled = 0, pfFirst = null, pfLast = null;
+      for (const [t, l, pf] of st.frames) {
+        if (t < winStart || t > toRel) continue;
+        frames++;
+        if (pf !== undefined) { if (pfFirst === null) pfFirst = pf; pfLast = pf; }
+        if (l !== null) { sampled++; if (l >= 0) lats.push(l); }
+      }
+      lats.sort((a, b) => a - b);
+      let stallMs = 0, stallCount = 0;
+      for (const [s, d] of stallsUntil(p, toRel)) {
+        const a = Math.max(s, winStart), b = Math.min(s + d, toRel);
+        if (b > a) { stallMs += b - a; stallCount++; }
+      }
+      const bufs = st.buffer.filter(([t]) => t >= winStart && t <= toRel).map(([, b]) => b);
+      const mean = lats.length ? lats.reduce((a, b) => a + b, 0) / lats.length : null;
+      Object.assign(res, {
+        windowMs: Math.round(winMs), frames, latN: lats.length, decodeRate: sampled ? lats.length / sampled : null,
+        latMeanMs: mean, latP50Ms: quantile(lats, 0.5), latP95Ms: quantile(lats, 0.95), latP99Ms: quantile(lats, 0.99),
+        latStdMs: lats.length > 1 ? Math.sqrt(lats.reduce((a, v) => a + (v - mean) ** 2, 0) / (lats.length - 1)) : null,
+        stallCount, stallMs: Math.round(stallMs), stallRatioPct: (100 * stallMs) / winMs,
+        // presentedFrames counts every frame handed to the compositor, even if a callback was skipped
+        fps: pfFirst !== null && pfLast > pfFirst ? ((pfLast - pfFirst) * 1000) / winMs : (frames * 1000) / winMs,
+        bufferMeanS: bufs.length ? bufs.reduce((a, b) => a + b, 0) / bufs.length : null,
+      });
+      return res;
+    }
+
+    // ------------------------------------------------------------------ agent: network profile + per-protocol wire counters
+    const wire = { prev: null, kbps: {}, drops: {} };
+
+    async function loadProfiles() {
+      try {
+        const r = await fetch(`${AGENT}/api/profiles`, { cache: 'no-store' });
+        const j = await r.json();
+        const sel = $('profileSelect');
+        sel.innerHTML = Object.entries(j.profiles)
+          .map(([k, v]) => `<option value="${k}" title="${v.description}">${k} &mdash; ${v.description}</option>`).join('');
+        if (j.active) sel.value = j.active;
+      } catch (e) { $('profileSelect').innerHTML = '<option value="">(agent offline)</option>'; }
+    }
+
+    async function pollAgentNet() {
+      try {
+        const r = await fetch(`${AGENT}/api/netem`, { cache: 'no-store' });
+        const j = await r.json();
+        $('pill-net').innerHTML = `network <b>${j.profile || 'no tc'}</b>`;
+        $('pill-net').title = j.spec ? j.spec.description : '';
+        const now = j.server_time_ms;
+        if (wire.prev && j.counters) {
+          const dt = (now - wire.prev.t) / 1000;
+          for (const p of ALL) {
+            const c = j.counters[p], c0 = wire.prev.c[p];
+            if (c && c0 && dt > 0 && c.bytes >= c0.bytes) {
+              wire.kbps[p] = Math.round(((c.bytes - c0.bytes) * 8) / dt / 1000);
+              wire.drops[p] = c.drops - c0.drops;
+            }
+          }
+        }
+        wire.prev = { t: now, c: j.counters || {} };
+      } catch (e) { $('pill-net').innerHTML = 'network <b>agent offline</b>'; }
+    }
+
+    async function applyProfile() {
+      const name = $('profileSelect').value;
+      if (!name) return;
+      const btn = $('applyProfileBtn');
+      btn.disabled = true;
+      try {
+        await fetch(`${AGENT}/api/netem/apply`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ profile: name }),
+        });
+        wire.prev = null;
+        await pollAgentNet();
+      } finally { btn.disabled = false; }
+    }
+
+    // ------------------------------------------------------------------ live cards
+    const fmt = (v, d = 0) => (v === null || v === undefined || !isFinite(v) ? '--' : v.toFixed(d));
+
+    function updateCards() {
+      const nowRel = performance.now() - session.t0;
+      for (const p of PROTOS) {
+        const st = state[p];
+        if (st.startPerf === null) continue;
+        const s = summarize(p, nowRel - LIVE_WINDOW_MS, nowRel);
+        const all = stallsUntil(p, nowRel);
+        const allStallMs = all.reduce((a, x) => a + x[1], 0);
+        const stalledNow = all.length && all[all.length - 1][2] === 'ongoing';
+        if (st.firstFramePerf !== null) setBadge(p, stalledNow ? 'STALLED' : 'LIVE', stalledNow ? 'stalled' : 'live');
+        $(`lat-${p}`).textContent = `${fmt(st.lastLatency)} / ${fmt(s.latMeanMs)} ms`;
+        $(`p95-${p}`).textContent = `${fmt(s.latP95Ms)} ms / ${st.ttffMs === null ? '--' : (st.ttffMs / 1000).toFixed(2) + ' s'}`;
+        $(`stall-${p}`).textContent = `${all.length} / ${(allStallMs / 1000).toFixed(1)} s`;
+        $(`ratio-${p}`).textContent = `${fmt(s.stallRatioPct, 1)} % / ${fmt(s.fps, 1)}`;
+        $(`buf-${p}`).textContent = st.curBufferSec === null ? '--' : `${st.curBufferSec.toFixed(2)} s`;
+        $(`wire-${p}`).textContent = wire.kbps[p] === undefined ? '--' : `${wire.kbps[p]} kbps / ${wire.drops[p]}`;
+      }
+    }
+
+    // ------------------------------------------------------------------ live latency chart (plain canvas)
+    let chartYMax = 1000;
+    function clearChartCache() { chartYMax = 1000; }
+
+    function drawChart() {
+      const cv = $('latChart');
+      const dpr = window.devicePixelRatio || 1;
+      const w = cv.clientWidth, h = cv.clientHeight;
+      if (cv.width !== Math.round(w * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+      const ctx = cv.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      const padL = 52, padR = 10, padT = 8, padB = 22;
+      const nowRel = performance.now() - session.t0;
+      const t0 = nowRel - 60000;
+      let maxSeen = 0;
+      for (const p of PROTOS) for (const [t, l] of state[p].frames) if (t >= t0 && l > maxSeen) maxSeen = l;
+      const target = Math.max(500, Math.ceil((maxSeen * 1.15) / 250) * 250);
+      chartYMax += (target - chartYMax) * 0.25;
+      const X = (t) => padL + ((t - t0) / 60000) * (w - padL - padR);
+      const Y = (v) => padT + (1 - v / chartYMax) * (h - padT - padB);
+
+      ctx.font = '11px system-ui, sans-serif';
+      ctx.strokeStyle = '#334155'; ctx.fillStyle = '#94a3b8'; ctx.lineWidth = 1;
+      const step = chartYMax > 4000 ? 1000 : chartYMax > 2000 ? 500 : 250;
+      for (let v = 0; v <= chartYMax; v += step) {
+        ctx.beginPath(); ctx.moveTo(padL, Y(v)); ctx.lineTo(w - padR, Y(v)); ctx.stroke();
+        ctx.fillText(`${v} ms`, 4, Y(v) + 4);
+      }
+      for (let s = 0; s <= 60; s += 10) ctx.fillText(`-${60 - s}s`, X(t0 + s * 1000) - 10, h - 6);
+
+      PROTOS.forEach((p, i) => {
+        const st = state[p];
+        ctx.strokeStyle = COLOR[p]; ctx.lineWidth = 2; ctx.beginPath();
+        let prevT = null;
+        for (const [t, l] of st.frames) {
+          if (t < t0 || l === null || l < 0) continue;
+          if (prevT === null || t - prevT > 300) ctx.moveTo(X(t), Y(l)); else ctx.lineTo(X(t), Y(l));
+          prevT = t;
+        }
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(248,113,113,0.85)';
+        for (const [s, d] of stallsUntil(p, nowRel)) {
+          if (s + d < t0) continue;
+          const a = X(Math.max(s, t0)), b = X(s + d);
+          ctx.fillRect(a, h - padB - 4 - i * 5, Math.max(2, b - a), 3);
+        }
+      });
+    }
+
+    // ------------------------------------------------------------------ export / automated report
+    function buildReport(endRel, extra) {
+      const fromRel = warmupSec * 1000;
+      const out = {
+        meta: {
+          runId, profile: profileLabel, bufferTargetSec: bufferTarget, durationSec: runDurationSec, warmupSec,
+          server: SERVER, singleProto, userAgent: navigator.userAgent, startedWallMs: session.startedWall,
+          endRelMs: Math.round(endRel), stallGapMs: STALL_GAP_MS, clock: clock.history, ...extra,
+        },
+        protocols: {},
+      };
+      for (const p of PROTOS) {
+        const st = state[p];
+        out.protocols[p] = {
+          ttffMs: st.ttffMs,
+          startRelMs: st.startPerf === null ? null : Math.round(st.startPerf - session.t0),
+          firstFrameRelMs: st.firstFramePerf === null ? null : Math.round(st.firstFramePerf - session.t0),
+          frames: st.frames, stalls: stallsUntil(p, endRel), buffer: st.buffer,
+          waitingEvents: st.waitingEvents, decodeFail: st.decodeFail, invalidLat: st.invalidLat,
+          events: st.events, maxBufferedRanges: st.maxRanges,
+          rtcStats: st.rtc.last, summary: summarize(p, fromRel, endRel),
+        };
+      }
+      return out;
+    }
+
+    function exportJSON() {
+      const rep = buildReport(performance.now() - session.t0, { mode: 'manual-export' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(rep)], { type: 'application/json' }));
+      a.download = `telemetry_${Date.now()}.json`;
+      a.click();
+    }
+
+    // ------------------------------------------------------------------ boot
+    document.addEventListener('DOMContentLoaded', async () => {
+      buildCards();
+      $('pill-server').innerHTML = `server <b>${SERVER}</b>`;
+      if (bufferTarget > 0) $('bufferSelect').value = String(bufferTarget);
+      $('applyProfileBtn').onclick = applyProfile;
+      $('bufferSelect').onchange = () => { bufferTarget = parseFloat($('bufferSelect').value || '0'); startAll(); };
+      $('startBtn').onclick = startAll;
+      $('resetBtn').onclick = resetMetrics;
+      $('calBtn').onclick = () => calibrateClock(15);
+      $('exportBtn').onclick = exportJSON;
+      PROTOS.forEach((p) => {
+        const v = $(`video-${p}`);
+        // 'waiting' events are kept for reference only; stalls use the frame-gap definition.
+        v.addEventListener('waiting', () => { state[p].waitingEvents++; });
+        // A new media source can drop pending frame callbacks, so re-arm whenever data arrives.
+        v.addEventListener('loadeddata', () => armFrameLoop(p));
+        v.addEventListener('playing', () => armFrameLoop(p));
+      });
+
+      if (autoRun) {
+        $('controls').style.display = 'none';
+        $('runBanner').textContent = `Automated run ${runId || ''}: profile=${profileLabel} | buffer=${bufferTarget}s | duration=${runDurationSec}s (warm-up ${warmupSec}s)`;
+      }
+
+      await calibrateClock(autoRun ? 25 : 15);
+      setInterval(pollPlayers, 250);
+      setInterval(updateCards, 500);
+      if (!autoRun) {
+        loadProfiles();
+        pollAgentNet();
+        setInterval(pollAgentNet, 2000);
+        setInterval(() => calibrateClock(8), 60000);
+        const loop = () => { drawChart(); requestAnimationFrame(loop); };
+        requestAnimationFrame(loop);
+      }
+      startAll();
+
+      if (autoRun && runDurationSec > 0) {
+        // Server-side per-protocol tc counters at the start and end of the measurement window
+        const wireSnap = {};
+        const snap = async (key) => {
+          const relMs = Math.round(performance.now() - session.t0);
+          try {
+            const j = await (await fetch(`${AGENT}/api/netem`, { cache: 'no-store' })).json();
+            wireSnap[key] = { relMs, serverTimeMs: j.server_time_ms, counters: j.counters };
+          } catch (e) { wireSnap[key] = { relMs, error: String(e) }; }
+        };
+        setTimeout(() => snap('start'), warmupSec * 1000);
+        setTimeout(async () => {
+          const endRel = performance.now() - session.t0;
+          await snap('end');
+          await calibrateClock(15);
+          const report = buildReport(endRel, { mode: 'autorun', wireWindow: wireSnap });
+          PROTOS.forEach(stopPlayer);
+          try {
+            await fetch(REPORT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(report) });
+          } catch (e) { console.error('report POST failed', e); }
+          document.title = 'DONE';
+        }, runDurationSec * 1000);
+      }
+    });
+  </script>
+</body>
+</html>

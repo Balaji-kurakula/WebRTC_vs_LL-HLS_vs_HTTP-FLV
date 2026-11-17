@@ -1,0 +1,22 @@
+logLevel: info
+logDestinations: [stdout]
+
+rtmp: yes
+rtmpAddress: :1936
+
+hls: yes
+hlsAddress: :8888
+hlsAllowOrigins: ['*']
+hlsAlwaysRemux: yes
+hlsVariant: lowLatency
+hlsSegmentCount: 7
+hlsSegmentDuration: 1s
+hlsPartDuration: 200ms
+hlsSegmentMaxSize: 50M
+
+webrtc: no
+rtsp: no
+srt: no
+
+paths:
+  all_others:

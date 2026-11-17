@@ -1,0 +1,5 @@
+﻿== 03:19:40 python scripts/run_campaign.py --campaign main_20261113
+[campaign] resuming 'main_20261113' (100 runs planned)
+[campaign] 6 done, 94 to go. Results -> C:\Users\kurak\Desktop\7th sem\TCP&IP\Project\tcp_ip_Project\results\campaigns\main_20261113
+
+[1/94] r01_baseline_b2.0 (profile=baseline, buffer=2.0s)
